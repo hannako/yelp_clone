@@ -30,6 +30,7 @@ group :test do
   gem 'byebug'
   gem 'rspec-rails'
   gem 'capybara'
+  gem 'rspec-collection_matchers'
 
 
 end
