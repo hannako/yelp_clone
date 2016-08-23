@@ -8,7 +8,11 @@
     %br
     = link_to "Delete #{restaurant.name}", restaurant_path(restaurant), method: :delete
     %br
-    %br
+    = link_to "Review #{restaurant.name}", new_restaurant_review_path(restaurant)
+      - restaurant.reviews.each do |review|
+      %p= review.thoughts
+      %p= review.rating
+            
 - else
   %h1 No restaurants yet!
 
