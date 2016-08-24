@@ -78,7 +78,7 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   #Set to the actual host of the application when we have a production environment.
-  config.action_mailed.default_url_options = { host: '?', port: ? }
+  # config.action_mailed.default_url_options = { host: '?', port: ? }
 
 
 end
