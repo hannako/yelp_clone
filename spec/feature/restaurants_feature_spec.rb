@@ -1,36 +1,94 @@
 require 'rails_helper'
 
 feature 'restaurants' do
+
   context 'no restaurants have been added' do
-    scenario 'should display a prompt to add a restaurant' do
-      visit '/restaurants'
+    before do
+      User.create(email: "test@test.co.uk", password: "123456")
+    end
+
+    scenario 'if user logged in should display a prompt to add a restaurant' do
+
+      visit '/'
+      click_link 'Sign in'
+      fill_in 'Email', with: 'test@test.co.uk'
+      fill_in 'Password', with: '123456'
+      click_button 'Log in'
       expect(page).to have_content 'No restaurants yet'
       expect(page).to have_link 'Add a restaurant'
     end
+
   end
+
   context 'restaurants have been added' do
     before do
       Restaurant.create(name: 'KFC')
+      User.create(email: "test@test.co.uk", password: "123456")
     end
-    scenario 'display restaurants' do
-      visit '/restaurants'
+    scenario 'if a user is logged in the restaurants are displayed' do
+      visit '/'
+      click_link 'Sign in'
+      fill_in 'Email', with: 'test@test.co.uk'
+      fill_in 'Password', with: '123456'
+      click_button 'Log in'
+      expect(page).to have_content('KFC')
+      expect(page).not_to have_content('No restaurants yet')
+    end
+
+    scenario 'if a user is logged out the restaurants are displayed' do
+      visit '/'
+      click_link 'Sign in'
+      fill_in 'Email', with: 'test@test.co.uk'
+      fill_in 'Password', with: '123456'
+      click_button 'Log in'
+      click_link 'Sign out'
       expect(page).to have_content('KFC')
       expect(page).not_to have_content('No restaurants yet')
     end
   end
+
   context 'creating restaurants' do
-    scenario 'prompts user to fill out a form, then display the new restaurant' do
-      visit '/restaurants'
+
+    before do
+      User.create(email: "test@test.co.uk", password: "123456")
+    end
+
+    scenario 'prompts a signed in user to fill out a form, then display the new restaurant' do
+      visit '/'
+      click_link 'Sign in'
+      fill_in 'Email', with: 'test@test.co.uk'
+      fill_in 'Password', with: '123456'
+      click_button 'Log in'
       click_link 'Add a restaurant'
       fill_in 'Name', with: 'KFC'
       click_button 'Create Restaurant'
       expect(page).to have_content 'KFC'
       expect(current_path).to eq '/restaurants'
     end
+
+    scenario 'a logged out user cannot add a new restaurant' do
+      visit '/'
+      click_link 'Sign in'
+      fill_in 'Email', with: 'test@test.co.uk'
+      fill_in 'Password', with: '123456'
+      click_button 'Log in'
+      click_link 'Sign out'
+      expect(page).not_to have_content 'Add a restaurant'
+    end
   end
+
   context 'an invalid restaurant' do
-    scenario 'does not let you submit a name that is too short' do
-      visit '/restaurants'
+
+    before do
+      User.create(email: "test@test.co.uk", password: "123456")
+    end
+
+    scenario 'a logged in user cannot submit a restaurant name that is too short' do
+      visit '/'
+      click_link 'Sign in'
+      fill_in 'Email', with: 'test@test.co.uk'
+      fill_in 'Password', with: '123456'
+      click_button 'Log in'
       click_link 'Add a restaurant'
       fill_in 'Name', with: 'kf'
       click_button 'Create Restaurant'
@@ -38,20 +96,41 @@ feature 'restaurants' do
       expect(page).to have_content 'error'
     end
   end
+
   context 'viewing restaurants' do
+
+    before do
+      User.create(email: "test@test.co.uk", password: "123456")
+    end
+
     let!(:kfc) { Restaurant.create(name: 'KFC') }
-    scenario 'lets a user view a restaurant' do
-      visit '/restaurants'
+
+    scenario 'lets a logged out user view a restaurant' do
+      visit '/'
+      click_link 'Sign in'
+      fill_in 'Email', with: 'test@test.co.uk'
+      fill_in 'Password', with: '123456'
+      click_button 'Log in'
+      click_link 'Sign out'
       click_link 'KFC'
       expect(page).to have_content 'KFC'
       expect(current_path).to eq "/restaurants/#{kfc.id}"
     end
   end
-  context 'editing restaurants' do
-    before { Restaurant.create name: 'KFC', description: 'Deep fried goodness' }
 
-    scenario 'let a user edit a restaurant' do
-      visit '/restaurants'
+  context 'editing restaurants' do
+
+    before do
+    Restaurant.create name: 'KFC', description: 'Deep fried goodness'
+    User.create(email: "test@test.co.uk", password: "123456")
+  end
+
+    scenario 'lets a signed in user edit a restaurant' do
+      visit '/'
+      click_link 'Sign in'
+      fill_in 'Email', with: 'test@test.co.uk'
+      fill_in 'Password', with: '123456'
+      click_button 'Log in'
       click_link 'Edit KFC'
       fill_in 'Name', with: 'Kentucky Fried Chicken'
       fill_in 'Description', with: 'Deep fried goodness'
@@ -60,15 +139,45 @@ feature 'restaurants' do
       expect(page).to have_content 'Deep fried goodness'
       expect(current_path).to eq '/restaurants'
     end
-  end
-  context 'deleting restaurants' do
-    before { Restaurant.create name: 'KFC', description: 'Deep fried goodness' }
 
-    scenario 'removes a restaurant when a user clicks a delete link' do
-      visit '/restaurants'
+    scenario 'a signed out user does not have option to edit restaurant' do
+      visit '/'
+      click_link 'Sign in'
+      fill_in 'Email', with: 'test@test.co.uk'
+      fill_in 'Password', with: '123456'
+      click_button 'Log in'
+      click_link 'Sign out'
+      expect(page).not_to have_link 'Edit KFC'
+    end
+
+  end
+
+  context 'deleting restaurants' do
+    before do
+      Restaurant.create name: 'KFC', description: 'Deep fried goodness'
+      User.create(email: "test@test.co.uk", password: "123456")
+    end
+
+    scenario 'a signed in user can remove a restaurant when they click delete link' do
+      visit '/'
+      click_link 'Sign in'
+      fill_in 'Email', with: 'test@test.co.uk'
+      fill_in 'Password', with: '123456'
+      click_button 'Log in'
       click_link 'Delete KFC'
       expect(page).not_to have_content 'KFC'
       expect(page).to have_content 'Restaurant deleted successfully'
     end
+
+    scenario 'a logged out user does not have the option to delete a restaurant' do
+      visit '/'
+      click_link 'Sign in'
+      fill_in 'Email', with: 'test@test.co.uk'
+      fill_in 'Password', with: '123456'
+      click_button 'Log in'
+      click_link 'Sign out'
+      expect(page).not_to have_link 'Delete KFC'
+    end
+
   end
 end
