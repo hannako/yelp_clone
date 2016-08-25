@@ -12,6 +12,7 @@ before_action :authenticate_user!, :except => [:index, :show]
 
   def create
     @restaurant = Restaurant.new(restaurant_params)
+    current_user.restaurants << @restaurant
       if @restaurant.save
         redirect_to restaurants_path
       else

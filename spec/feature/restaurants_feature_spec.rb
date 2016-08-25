@@ -138,15 +138,29 @@ feature 'restaurants' do
 
   context 'deleting restaurants' do
     before do
-      Restaurant.create name: 'KFC', description: 'Deep fried goodness'
+      Restaurant.create name: 'McDonalds', description: 'Burgers'
       User.create(email: "test@test.co.uk", password: "123456")
     end
 
-    scenario 'a signed in user can remove a restaurant when they click delete link' do
+    scenario 'a signed in user can remove a restaurant they created, when they click delete link' do
       sign_in
+      click_link 'Add a restaurant'
+      fill_in 'Name', with: 'KFC'
+      fill_in 'Description', with: 'Kentucky Fried Chicken'
+      click_button 'Create Restaurant'
+      expect(page).not_to have_link 'Delete McDonalds'
+      expect(page).to have_link 'Delete KFC'
+    end
+
+    scenario 'the creator can delete a restaurant they own' do
+      sign_in
+      click_link 'Add a restaurant'
+      fill_in 'Name', with: 'KFC'
+      fill_in 'Description', with: 'Kentucky Fried Chicken'
+      click_button 'Create Restaurant'
       click_link 'Delete KFC'
-      expect(page).not_to have_content 'KFC'
       expect(page).to have_content 'Restaurant deleted successfully'
+
     end
 
     scenario 'a logged out user does not have the option to delete a restaurant' do
