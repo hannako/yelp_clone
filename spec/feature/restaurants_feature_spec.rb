@@ -20,6 +20,7 @@ feature 'restaurants' do
       Restaurant.create(name: 'KFC')
       User.create(email: "test@test.co.uk", password: "123456")
     end
+
     scenario 'if a user is logged in the restaurants are displayed' do
       sign_in
       expect(page).to have_content('KFC')
@@ -92,12 +93,17 @@ feature 'restaurants' do
   context 'editing restaurants' do
 
     before do
-    Restaurant.create name: 'KFC', description: 'Deep fried goodness'
-    User.create(email: "test@test.co.uk", password: "123456")
-  end
+      Restaurant.create name: 'Pizza Express', description: 'Italian Stuff'
+      User.create(email: "test@test.co.uk", password: "123456")
+      User.create(email: "joe@bloggs.co.uk", password: "password123")
+    end
 
-    scenario 'lets a signed in user edit a restaurant' do
+    scenario 'lets the creator edit their restaurants' do
       sign_in
+      click_link 'Add a restaurant'
+      fill_in 'Name', with: 'KFC'
+      fill_in 'Description', with: 'Kentucky Fried Chicken'
+      click_button 'Create Restaurant'
       click_link 'Edit KFC'
       fill_in 'Name', with: 'Kentucky Fried Chicken'
       fill_in 'Description', with: 'Deep fried goodness'
@@ -105,6 +111,21 @@ feature 'restaurants' do
       expect(page).to have_content 'Kentucky Fried Chicken'
       expect(page).to have_content 'Deep fried goodness'
       expect(current_path).to eq '/restaurants'
+    end
+
+    scenario 'a signed in user cannot edit a restaurant they did not create' do
+      sign_in
+      click_link 'Add a restaurant'
+      fill_in 'Name', with: 'Whimpy'
+      fill_in 'Description', with: 'Burgers'
+      click_button 'Create Restaurant'
+      click_link 'Sign out'
+      click_link 'Sign in'
+      fill_in 'Email', with: 'joe@bloggs.co.uk'
+      fill_in 'Password', with: 'password123'
+      click_button 'Log in'
+      expect(page).not_to have_link 'Edit Whimpy'
+      expect(page).not_to have_link 'Edit Pizza Express'
     end
 
     scenario 'a signed out user does not have option to edit restaurant' do
