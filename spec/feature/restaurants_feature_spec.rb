@@ -8,7 +8,7 @@ feature 'restaurants' do
     end
 
     scenario 'if user logged in should display a prompt to add a restaurant' do
-      sign_in
+      sign_in("test@test.co.uk","123456")
       expect(page).to have_content 'No restaurants yet'
       expect(page).to have_link 'Add a restaurant'
     end
@@ -22,13 +22,13 @@ feature 'restaurants' do
     end
 
     scenario 'if a user is logged in the restaurants are displayed' do
-      sign_in
+      sign_in("test@test.co.uk","123456")
       expect(page).to have_content('KFC')
       expect(page).not_to have_content('No restaurants yet')
     end
 
     scenario 'if a user is logged out the restaurants are displayed' do
-      sign_in
+      sign_in("test@test.co.uk","123456")
       click_link 'Sign out'
       expect(page).to have_content('KFC')
       expect(page).not_to have_content('No restaurants yet')
@@ -42,16 +42,14 @@ feature 'restaurants' do
     end
 
     scenario 'prompts a signed in user to fill out a form, then display the new restaurant' do
-      sign_in
-      click_link 'Add a restaurant'
-      fill_in 'Name', with: 'KFC'
-      click_button 'Create Restaurant'
+      sign_in("test@test.co.uk","123456")
+      create_restaurant('KFC','chicken')
       expect(page).to have_content 'KFC'
       expect(current_path).to eq '/restaurants'
     end
 
     scenario 'a logged out user cannot add a new restaurant' do
-      sign_in
+      sign_in("test@test.co.uk","123456")
       click_link 'Sign out'
       expect(page).not_to have_content 'Add a restaurant'
     end
@@ -64,10 +62,8 @@ feature 'restaurants' do
     end
 
     scenario 'a logged in user cannot submit a restaurant name that is too short' do
-      sign_in
-      click_link 'Add a restaurant'
-      fill_in 'Name', with: 'kf'
-      click_button 'Create Restaurant'
+      sign_in("test@test.co.uk","123456")
+      create_restaurant('kf',"chicken")
       expect(page).not_to have_css 'h2', text: 'kf'
       expect(page).to have_content 'error'
     end
@@ -82,7 +78,7 @@ feature 'restaurants' do
     let!(:kfc) { Restaurant.create(name: 'KFC') }
 
     scenario 'lets a logged out user view a restaurant' do
-      sign_in
+      sign_in("test@test.co.uk","123456")
       click_link 'Sign out'
       click_link 'KFC'
       expect(page).to have_content 'KFC'
@@ -99,11 +95,8 @@ feature 'restaurants' do
     end
 
     scenario 'lets the creator edit their restaurants' do
-      sign_in
-      click_link 'Add a restaurant'
-      fill_in 'Name', with: 'KFC'
-      fill_in 'Description', with: 'Kentucky Fried Chicken'
-      click_button 'Create Restaurant'
+      sign_in("test@test.co.uk","123456")
+      create_restaurant('KFC','Kentucky Fried Chicken')
       click_link 'Edit KFC'
       fill_in 'Name', with: 'Kentucky Fried Chicken'
       fill_in 'Description', with: 'Deep fried goodness'
@@ -114,11 +107,8 @@ feature 'restaurants' do
     end
 
     scenario 'a signed in user cannot edit a restaurant they did not create' do
-      sign_in
-      click_link 'Add a restaurant'
-      fill_in 'Name', with: 'Whimpy'
-      fill_in 'Description', with: 'Burgers'
-      click_button 'Create Restaurant'
+      sign_in("test@test.co.uk","123456")
+      create_restaurant('Whimpy','Burgers')
       click_link 'Sign out'
       click_link 'Sign in'
       fill_in 'Email', with: 'joe@bloggs.co.uk'
@@ -129,7 +119,7 @@ feature 'restaurants' do
     end
 
     scenario 'a signed out user does not have option to edit restaurant' do
-      sign_in
+      sign_in("test@test.co.uk","123456")
       click_link 'Sign out'
       expect(page).not_to have_link 'Edit KFC'
     end
@@ -143,7 +133,7 @@ feature 'restaurants' do
     end
 
     scenario 'a signed in user can remove a restaurant they created, when they click delete link' do
-      sign_in
+      sign_in("test@test.co.uk","123456")
       click_link 'Add a restaurant'
       fill_in 'Name', with: 'KFC'
       fill_in 'Description', with: 'Kentucky Fried Chicken'
@@ -153,7 +143,7 @@ feature 'restaurants' do
     end
 
     scenario 'the creator can delete a restaurant they own' do
-      sign_in
+      sign_in("test@test.co.uk","123456")
       click_link 'Add a restaurant'
       fill_in 'Name', with: 'KFC'
       fill_in 'Description', with: 'Kentucky Fried Chicken'
@@ -164,7 +154,7 @@ feature 'restaurants' do
     end
 
     scenario 'a logged out user does not have the option to delete a restaurant' do
-      sign_in
+      sign_in("test@test.co.uk","123456")
       click_link 'Sign out'
       expect(page).not_to have_link 'Delete KFC'
     end
