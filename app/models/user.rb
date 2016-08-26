@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
 
   has_many :restaurants
-  has_many :reviewed_restaurants, through: :reviews, source: :restaurant 
+  has_many :reviewed_restaurants, through: :reviews, source: :restaurant
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable,
@@ -15,4 +15,7 @@ class User < ActiveRecord::Base
      end
   end
 
+  def has_reviewed?(restaurant)
+    reviewed_restaurants.include? restaurant
+  end
 end
