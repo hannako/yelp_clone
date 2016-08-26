@@ -1,6 +1,7 @@
 class User < ActiveRecord::Base
 
   has_many :restaurants
+  has_many :reviewed_restaurants, through: :reviews, source: :restaurant 
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable,
