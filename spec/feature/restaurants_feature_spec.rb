@@ -9,7 +9,7 @@ feature 'restaurants' do
 
     scenario 'if user logged in should display a prompt to add a restaurant' do
       sign_in("test@test.co.uk","123456")
-      expect(page).to have_content 'No restaurants yet'
+      expect(page).to have_content 'No restaurants yet!'
       expect(page).to have_link 'Add a restaurant'
     end
 

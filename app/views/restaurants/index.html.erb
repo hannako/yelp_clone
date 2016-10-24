@@ -1,0 +1,37 @@
+<%if (user_signed_in?) && (@restaurants.any?) %>
+  <%= link_to 'Add a restaurant', new_restaurant_path %>
+  <br />
+  <%@restaurants.each do |restaurant| %>
+    <br />
+    <%=link_to "#{restaurant.name}", restaurant_path(restaurant) %>
+    <%restaurant.description%>
+    <br />
+      <%if current_user.id == restaurant.user_id%>
+        <%=link_to "Edit #{restaurant.name}", edit_restaurant_path(restaurant)%>
+        <%=link_to "Delete #{restaurant.name}", restaurant_path(restaurant), method: :delete %>
+      <%end%>
+    <%=link_to "Review #{restaurant.name}", new_restaurant_review_path(restaurant)%>
+      <br /> <br />
+      <%=restaurant.reviews.each do |review|%>
+      <%=review.thoughts%>
+      <%=review.rating%>
+      <h3>Average rating: <%=restaurant.average_rating.to_i%></h3>
+      <%=link_to "Endorse", review_endorsements_path(review), class: 'endorsements-link'%>
+      <%= pluralize(review.endorsements.count, 'endorsement')%>
+      <%end%>
+
+  <%end%>
+
+<%elsif @restaurants.any?%>
+  <%@restaurants.each do |restaurant| %>
+  <%=link_to "#{restaurant.name}", restaurant_path(restaurant)%>
+  <%restaurant.description%>
+  <h3>Average rating: <%=restaurant.average_rating.to_i%></h3>
+  <%end%>
+<%elsif user_signed_in?%>
+<%= link_to 'Add a restaurant', new_restaurant_path %>
+<br />
+No restaurants yet!
+<%else%>
+  No restaurants yet!
+<%end%>
